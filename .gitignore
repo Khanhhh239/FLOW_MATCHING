@@ -1,0 +1,21 @@
+# Checkpoints and models
+*.pt
+*.pth
+*.ckpt
+*.weights
+*.h5
+*.onnx
+
+# Data and large files
+*.bin
+*.npy
+*.npz
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter Notebook
+.ipynb_checkpoints

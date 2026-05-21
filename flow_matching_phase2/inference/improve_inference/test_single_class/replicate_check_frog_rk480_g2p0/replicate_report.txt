@@ -1,0 +1,12 @@
+Generated image 000:
+  top1: train_index=24184, cosine=0.894657, file=top1_nearest_image24184.png
+  top2: train_index=1155, cosine=0.893470, file=top2_nearest_image1155.png
+  top3: train_index=20788, cosine=0.884891, file=top3_nearest_image20788.png
+  top4: train_index=18801, cosine=0.884868, file=top4_nearest_image18801.png
+  top5: train_index=34539, cosine=0.880487, file=top5_nearest_image34539.png
+Generated image 001:
+  top1: train_index=22237, cosine=0.880400, file=top1_nearest_image22237.png
+  top2: train_index=46320, cosine=0.880374, file=top2_nearest_image46320.png
+  top3: train_index=47934, cosine=0.870785, file=top3_nearest_image47934.png
+  top4: train_index=22872, cosine=0.869598, file=top4_nearest_image22872.png
+  top5: train_index=14212, cosine=0.868756, file=top5_nearest_image14212.png

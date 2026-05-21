@@ -1,0 +1,22 @@
+name: flow_matching
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  # Core scientific stack (conda — links against MKL on Windows)
+  - numpy>=1.26
+  - scipy>=1.12
+  - matplotlib>=3.8
+  # PyTorch — CUDA 12.1 wheels (works on RTX 30xx / 40xx)
+  - pytorch>=2.2.0
+  - torchvision>=0.17.0
+  - pytorch-cuda=12.1
+  # Utilities
+  - tqdm>=4.66
+  - pip:
+    - einops>=0.7       # tensor manipulation (needed in Phase 2 U-Net)
+    - rich>=13.7        # pretty console output

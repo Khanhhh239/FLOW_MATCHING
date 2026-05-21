@@ -1,0 +1,60 @@
+{
+  "dataset": "swiss_roll",
+  "n_train": 50000,
+  "epochs_phase1": 300,
+  "epochs_phase2": 200,
+  "use_reflow": true,
+  "use_ema": true,
+  "use_spectral_norm": false,
+  "curv_weight": 0.01,
+  "baseline": {
+    "straightness": 0.8328566998243332,
+    "wasserstein_w2": 0.24434742615690438,
+    "mmd": 0.0023302435874938965,
+    "path_efficiency": 0.44674479961395264,
+    "solver_gap": 1.915757417678833,
+    "kinetic_energy": 1.184478804320097,
+    "mode_coverage": 0.0,
+    "mode_counts": []
+  },
+  "improved": {
+    "straightness": 0.9868451254442334,
+    "wasserstein_w2": 0.40908667191283654,
+    "mmd": 0.005750536918640137,
+    "path_efficiency": 0.9621046781539917,
+    "solver_gap": 2.039130210876465,
+    "kinetic_energy": 0.15204307645559317,
+    "mode_coverage": 0.0,
+    "mode_counts": []
+  },
+  "nfe_curve": [
+    {
+      "nfe": 10,
+      "w2": 0.4138263967257835,
+      "mmd": 0.006545722484588623
+    },
+    {
+      "nfe": 20,
+      "w2": 0.4319135342258796,
+      "mmd": 0.007356405258178711
+    },
+    {
+      "nfe": 50,
+      "w2": 0.4311102772035619,
+      "mmd": 0.007290959358215332
+    },
+    {
+      "nfe": 100,
+      "w2": 0.42185375901896666,
+      "mmd": 0.006729423999786377
+    },
+    {
+      "nfe": 200,
+      "w2": 0.4150988114045505,
+      "mmd": 0.005073428153991699
+    }
+  ],
+  "n_params": 565506,
+  "device": "cuda",
+  "torch_version": "2.5.1"
+}

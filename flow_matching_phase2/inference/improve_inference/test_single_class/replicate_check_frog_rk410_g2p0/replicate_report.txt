@@ -1,0 +1,6 @@
+Generated image 000:
+  top1: train_index=46539, cosine=0.934551, file=top1_nearest_image46539.png
+  top2: train_index=26151, cosine=0.931659, file=top2_nearest_image26151.png
+  top3: train_index=36724, cosine=0.929819, file=top3_nearest_image36724.png
+  top4: train_index=23549, cosine=0.929264, file=top4_nearest_image23549.png
+  top5: train_index=39913, cosine=0.928775, file=top5_nearest_image39913.png

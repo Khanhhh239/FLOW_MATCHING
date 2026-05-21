@@ -1,0 +1,30 @@
+{
+  "dataset": "CIFAR-10",
+  "n_train": 50000,
+  "n_val": 10000,
+  "img_shape": [
+    3,
+    32,
+    32
+  ],
+  "latent_shape": [
+    3,
+    32,
+    32
+  ],
+  "classes": [
+    "airplane",
+    "automobile",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck"
+  ],
+  "n_classes": 10,
+  "pixel_range": "[-1, 1]",
+  "note": "Dùng pixel space trực tiếp, không VAE, cho máy local"
+}
