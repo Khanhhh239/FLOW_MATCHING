@@ -153,12 +153,15 @@ with $\lambda_c = 0.01$, $\lambda_{\text{mag}} = 10^{-5}$.
 **Rectified Flow** (Liu et al., 2022) iteratively straightens trajectories via a two-stage protocol:
 
 **Stage 1** — Train with random coupling:
+
 $$\hat{u}_\theta \leftarrow \arg\min_\theta \mathcal{L}_{\text{CFM}}(\theta)$$
 
 **Stage 2** — Generate paired data using the Stage 1 model:
+
 $$\hat{x}_0^{(i)} \sim \mathcal{N}(0,I), \quad \hat{x}_1^{(i)} = \text{ODESolve}(\hat{u}_\theta, \hat{x}_0^{(i)}) \qquad\text{(Eq. 7)}$$
 
 **Stage 3** — Retrain on the self-generated *straight* pairs:
+
 $$u_\theta^{\text{reflow}} \leftarrow \arg\min_\theta \mathcal{L}_{\text{reflow}}\bigl(\{(\hat{x}_0^{(i)}, \hat{x}_1^{(i)})\}\bigr)$$
 
 The **reflow loss** is identical in form to the original CFM loss but applied to the self-generated pairs, enforcing the fixed-point property:
