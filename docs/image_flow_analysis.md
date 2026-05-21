@@ -1,4 +1,4 @@
-﻿# analyze.md
+# analyze.md
 
 ## 1. Objective
 
@@ -17,36 +17,138 @@ Training Algo CFM:
 Algorithm 1: Conditional Flow Matching Training
 
 Input:
-- Data distribution p_data(x1)
-- Noise distribution p_noise(x0) = N(0, I)
-- Neural vector field vθ(x, t)
-- Number of training steps T
+- Data distribution:
+
+$$
+p_{\text{data}}(x_1)
+$$
+
+- Noise distribution:
+
+$$
+p_{\text{noise}}(x_0) = \mathcal{N}(0, I)
+$$
+
+- Neural vector field:
+
+$$
+v_\theta(x,t)
+$$
+
+- Number of training steps:
+
+$$
+T
+$$
 
 Repeat until convergence:
-1. Sample clean data: x1 ~ p_data(x1)
-2. Sample noise: x0 ~ p_noise(x0)
-3. Sample time: t ~ Uniform(0, 1)
-4. Construct interpolation path: xt = (1 - t)x0 + t x1
-5. Define target velocity: ut = x1 - x0
-6. Predict velocity with neural network: v_pred = vθ(xt, t)
-7. Compute flow matching loss: L = ||v_pred - ut||²
-8. Update parameters: θ ← θ - η ∇θ L
+
+1. Sample clean data:
+
+$$
+x_1 \sim p_{\text{data}}(x_1)
+$$
+
+2. Sample noise:
+
+$$
+x_0 \sim p_{\text{noise}}(x_0)
+$$
+
+3. Sample time:
+
+$$
+t \sim \text{Uniform}(0,1)
+$$
+
+4. Construct interpolation path:
+
+$$
+x_t = (1-t)x_0 + tx_1
+$$
+
+5. Define target velocity:
+
+$$
+u_t = x_1 - x_0
+$$
+
+6. Predict velocity with neural network:
+
+$$
+v_{\text{pred}} = v_\theta(x_t,t)
+$$
+
+7. Compute flow matching loss:
+
+$$
+L = \|v_{\text{pred}} - u_t\|^2
+$$
+
+8. Update parameters:
+
+$$
+\theta \leftarrow \theta - \eta \nabla_\theta L
+$$
 
 Inference / Sampling Algo CFM:
 
 Algorithm 2: CFM Sampling (ODE Integration)
 
 Input:
-- Trained vector field vθ(x, t)
-- Number of solver steps N
-- Step size Δt = 1/N
+- Trained vector field:
 
-1. Initialize: x0 ~ N(0, I)
-2. For k = 0 ... N-1:
-- tk = k / N
-- Predict velocity: vk = vθ(xk, tk)
-- Integrate ODE: xk+1 = xk + Δt · vk
-3. Return final sample: xN
+$$
+v_\theta(x,t)
+$$
+
+- Number of solver steps:
+
+$$
+N
+$$
+
+- Step size:
+
+$$
+\Delta t = \frac{1}{N}
+$$
+
+1. Initialize:
+
+$$
+x_0 \sim \mathcal{N}(0,I)
+$$
+
+2. For:
+
+$$
+k = 0,1,\dots,N-1
+$$
+
+Time index:
+
+$$
+t_k = \frac{k}{N}
+$$
+
+Predict velocity:
+
+$$
+v_k = v_\theta(x_k,t_k)
+$$
+
+Integrate ODE:
+
+$$
+x_{k+1} = x_k + \Delta t \cdot v_k
+$$
+
+3. Return final sample:
+
+$$
+x_N
+$$
 
 Core behavior:
 - Precompute "Latents" from CIFAR-10, don't use VAE to convert images into latent vectors (because the dim of images is 32x32, quite small).
@@ -60,8 +162,8 @@ Core behavior:
   - Scheduler: OneCycleLR
   - AMP mixed precision
 - Sampler (ODE):
-  - Euler sampler: first-order approximation, global error = O(dt)
-  - RK4 sampler: weighted 4-slope approximation, global error = O(dt^4), but NFE is 4x Euler steps
+  - Euler sampler: first-order approximation, global error = $\mathcal{O}(\Delta t)$
+  - RK4 sampler: weighted 4-slope approximation, global error = $\mathcal{O}(\Delta t^4)$, but NFE is 4x Euler steps
 - Select model version small and train with around 100 epochs.
 
 Observed issues:
@@ -94,31 +196,35 @@ Result:
 
 ### 4.1 Flow Matching objective
 
-The model learns velocity field `u_theta(x_t, t, y)` toward a target field `u*` under MSE:
+The model learns velocity field $u_\theta(x_t, t, y)$ toward a target field $u^*$ under MSE:
 
-`L = E ||u_theta(x_t, t, y) - u*(x0, x1, t)||^2`.
+$$
+L = \mathbb{E} \| u_\theta(x_t, t, y) - u^*(x_0, x_1, t) \|^2
+$$
 
 In practice, generation quality depends on:
-- field smoothness over `t`
+- field smoothness over $t$
 - numerical integration error
 - conditioning stability
 - trajectory regions receiving enough learning signal
 
 ### 4.2 Why uniform time sampling can under-emphasize useful regions
 
-With uniform `t`, training budget spreads equally over easy and hard trajectory segments. For image structure emergence, middle trajectory bands often carry high semantic transition signal. Log-normal-based mapping concentrates more samples around this useful region.
+With uniform $t$, training budget spreads equally over easy and hard trajectory segments. For image structure emergence, middle trajectory bands often carry high semantic transition signal. Log-normal-based mapping concentrates more samples around this useful region.
 
 ### 4.3 QK-Norm and long-horizon stability
 
-Attention logits scale with `q·k/sqrt(d)`. Over long training, drift in q/k magnitude can destabilize softmax temperature. QK-Norm constrains query/key magnitudes before interaction and reduces variance explosions.
+Attention logits scale with $\frac{q \cdot k}{\sqrt{d}}$. Over long training, drift in $q/k$ magnitude can destabilize softmax temperature. QK-Norm constrains query/key magnitudes before interaction and reduces variance explosions.
 
 ### 4.4 Guidance rescale and artifact suppression
 
 Classic CFG:
 
-`u_cfg = u_uncond + w (u_cond - u_uncond)`.
+$$
+u_{\text{cfg}} = u_{\text{uncond}} + w (u_{\text{cond}} - u_{\text{uncond}})
+$$
 
-For large `w`, variance of `u_cfg` can overshoot, creating color burn/noisy high-frequency artifacts. Guidance rescale matches field scale back toward conditional statistics.
+For large $w$, variance of $u_{\text{cfg}}$ can overshoot, creating color burn/noisy high-frequency artifacts. Guidance rescale matches field scale back toward conditional statistics.
 
 ### 4.5 Solver/NFE interaction
 

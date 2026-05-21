@@ -32,13 +32,13 @@ which represents a straight-line path perturbed by noise $\sigma_{\min}$ at $t=0
 
 The corresponding **conditional vector field target** (constant along the path):
 
-$$u^*(x_t \mid x_0, x_1) = x_1 - (1 - \sigma_{\min}) \cdot x_0 \qquad\text{(Eq. 1}$$
+$$u^*(x_t \mid x_0, x_1) = x_1 - (1 - \sigma_{\min}) \cdot x_0 \qquad\text{(Eq. 1)}$$
 
 This is the fundamental insight of CFM — the target field is **analytically available** and constant along each trajectory.
 
 **Training objective:**
 
-$$\mathcal{L}_{\text{CFM}}(\theta) = \mathbb{E}_{t \sim \mathcal{U}[0,1],\; x_0 \sim \mathcal{N}(0,I),\; x_1 \sim p_{\text{data}}} \bigl[ \| u_\theta(x_t, t) - u^*(x_t \mid x_0, x_1) \|^2 \bigr] \qquad\text{(Eq. 2}$$
+$$\mathcal{L}_{\text{CFM}}(\theta) = \mathbb{E}_{t \sim \mathcal{U}[0,1],\; x_0 \sim \mathcal{N}(0,I),\; x_1 \sim p_{\text{data}}} \bigl[ \| u_\theta(x_t, t) - u^*(x_t \mid x_0, x_1) \|^2 \bigr] \qquad\text{(Eq. 2)}$$
 
 A perfectly trained model produces **exactly straight-line trajectories**, since the target $u^*$ is constant.
 
@@ -111,7 +111,7 @@ with $\lambda_{\text{mag}} = 10^{-4}$. This penalizes field magnitude, reducing 
 
 **Improved** uses an adaptive schedule:
 
-$$\sigma(t) = \sigma_{\min} \cdot (1 - t)^2 \qquad\text{(Eq. 3}$$
+$$\sigma(t) = \sigma_{\min} \cdot (1 - t)^2 \qquad\text{(Eq. 3)}$$
 
 This means:
 
@@ -124,7 +124,7 @@ $$x_t = \bigl(1 - (1 - \sigma(t)) \cdot t\bigr) x_0 + t \cdot x_1$$
 
 And the target field correspondingly:
 
-$$u^*(x_t \mid x_0, x_1) = x_1 - (1 - \sigma(t)) \cdot x_0 \qquad\text{(Eq. 4}$$
+$$u^*(x_t \mid x_0, x_1) = x_1 - (1 - \sigma(t)) \cdot x_0 \qquad\text{(Eq. 4)}$$
 
 This creates a **time-adaptive curriculum**: the loss signal is softer early (more variance in paths) and sharper late (stricter alignment), which in practice improves training stability on complex geometries like Swiss Roll.
 
@@ -134,13 +134,13 @@ A key failure mode of naive CFM is that the learned vector field can still be cu
 
 The curvature penalty directly minimizes the temporal derivative of the field:
 
-$$\mathcal{L}_{\text{curv}} = \mathbb{E}\left[\left\| u_\theta(x_{t+\epsilon}, t+\epsilon) - u_\theta(x_t, t) \right\|^2\right] \qquad\text{(Eq. 5}$$
+$$\mathcal{L}_{\text{curv}} = \mathbb{E}\left[\left\| u_\theta(x_{t+\epsilon}, t+\epsilon) - u_\theta(x_t, t) \right\|^2\right] \qquad\text{(Eq. 5)}$$
 
 where $x_{t+\epsilon} = x_t + \epsilon \cdot u_\theta(x_t, t)$ is a one-step Euler forward propagation with step $\epsilon = 0.01$.
 
 The **full improved loss** is:
 
-$$\mathcal{L}_{\text{improved}} = \underbrace{\mathbb{E}\bigl[\| u_\theta(x_t, t) - u^* \|^2\bigr]}_{\text{CFM regression}} + \underbrace{\lambda_c \cdot \mathcal{L}_{\text{curv}}}_{\text{curvature reg}} + \underbrace{\lambda_{\text{mag}} \cdot \mathbb{E}\bigl[\|u_\theta\|\bigr]}_{\text{magnitude reg}} \qquad\text{(Eq. 6}$$
+$$\mathcal{L}_{\text{improved}} = \underbrace{\mathbb{E}\bigl[\| u_\theta(x_t, t) - u^* \|^2\bigr]}_{\text{CFM regression}} + \underbrace{\lambda_c \cdot \mathcal{L}_{\text{curv}}}_{\text{curvature reg}} + \underbrace{\lambda_{\text{mag}} \cdot \mathbb{E}\bigl[\|u_\theta\|\bigr]}_{\text{magnitude reg}} \qquad\text{(Eq. 6)}$$
 
 with $\lambda_c = 0.01$, $\lambda_{\text{mag}} = 10^{-5}$.
 
@@ -156,7 +156,7 @@ with $\lambda_c = 0.01$, $\lambda_{\text{mag}} = 10^{-5}$.
 $$\hat{u}_\theta \leftarrow \arg\min_\theta \mathcal{L}_{\text{CFM}}(\theta)$$
 
 **Stage 2** — Generate paired data using the Stage 1 model:
-$$\hat{x}_0^{(i)} \sim \mathcal{N}(0,I), \quad \hat{x}_1^{(i)} = \text{ODESolve}(\hat{u}_\theta, \hat{x}_0^{(i)}) \qquad\text{(Eq. 7}$$
+$$\hat{x}_0^{(i)} \sim \mathcal{N}(0,I), \quad \hat{x}_1^{(i)} = \text{ODESolve}(\hat{u}_\theta, \hat{x}_0^{(i)}) \qquad\text{(Eq. 7)}$$
 
 **Stage 3** — Retrain on the self-generated *straight* pairs:
 $$u_\theta^{\text{reflow}} \leftarrow \arg\min_\theta \mathcal{L}_{\text{reflow}}\bigl(\{(\hat{x}_0^{(i)}, \hat{x}_1^{(i)})\}\bigr)$$
@@ -171,7 +171,7 @@ $$\mathcal{L}_{\text{reflow}} = \mathbb{E}_{t,\, (\hat{x}_0, \hat{x}_1)} \bigl[\
 
 Instead of evaluating the raw model at the end of training, we maintain an EMA shadow copy:
 
-$$\theta_{\text{EMA}} \leftarrow \mu \cdot \theta_{\text{EMA}} + (1 - \mu) \cdot \theta \qquad\text{(Eq. 8}$$
+$$\theta_{\text{EMA}} \leftarrow \mu \cdot \theta_{\text{EMA}} + (1 - \mu) \cdot \theta \qquad\text{(Eq. 8)}$$
 
 with decay $\mu = 0.999$, updated after every gradient step.
 
@@ -188,7 +188,7 @@ The baseline feeds raw coordinates $x \in \mathbb{R}^2$. For complex geometries 
 
 **Random Fourier Features** (Rahimi & Recht, 2007):
 
-$$\phi(x) = \left[\sin(x^\top B_1), \cos(x^\top B_1), \ldots, \sin(x^\top B_{d/2}), \cos(x^\top B_{d/2})\right] \in \mathbb{R}^d \qquad\text{(Eq. 9}$$
+$$\phi(x) = \left[\sin(x^\top B_1), \cos(x^\top B_1), \ldots, \sin(x^\top B_{d/2}), \cos(x^\top B_{d/2})\right] \in \mathbb{R}^d \qquad\text{(Eq. 9)}$$
 
 where $B_j \sim \mathcal{N}(0, \sigma_B^2 I)$ are fixed random projection vectors. With scale $\sigma_B = 0.1$:
 
@@ -202,7 +202,7 @@ By the Bochner theorem, this approximates a shift-invariant kernel $k(x, y) = \e
 
 **Feature-wise Linear Modulation (FiLM)** (Perez et al., 2018) applies a learned affine transformation per feature dimension, conditioned on time:
 
-$$\text{FiLM}(h, t_{\text{emb}}) = \gamma(t_{\text{emb}}) \odot h + \beta(t_{\text{emb}}) \qquad\text{(Eq. 10}$$
+$$\text{FiLM}(h, t_{\text{emb}}) = \gamma(t_{\text{emb}}) \odot h + \beta(t_{\text{emb}}) \qquad\text{(Eq. 10)}$$
 
 where:
 
@@ -216,7 +216,7 @@ This allows the model to **multiplicatively gate** hidden features based on time
 
 To bound the Lipschitz constant of the network (stabilizing ODE integration), spectral normalization constrains each weight matrix:
 
-$$\tilde{W} = \frac{W}{\sigma_1(W)} \qquad\text{(Eq. 11}$$
+$$\tilde{W} = \frac{W}{\sigma_1(W)} \qquad\text{(Eq. 11)}$$
 
 where $\sigma_1(W)$ is the largest singular value, estimated via power iteration. This enforces:
 
@@ -232,7 +232,7 @@ A Lipschitz-bounded vector field is critical for ODE solvers — large Lipschitz
 
 ### 4.1 Straightness Score
 
-$$\text{Straightness} = 1 - \frac{\bar{d}_\perp}{\bar{\ell}_{\text{chord}}} \qquad\text{(Eq. 12}$$
+$$\text{Straightness} = 1 - \frac{\bar{d}_\perp}{\bar{\ell}_{\text{chord}}} \qquad\text{(Eq. 12)}$$
 
 where for each particle trajectory:
 
@@ -244,7 +244,7 @@ Score = 1.0 means **all trajectories are exact straight lines**. Score < 1 means
 
 ### 4.2 Path Efficiency
 
-$$\text{PathEff} = \mathbb{E}_i\!\left[\frac{\ell_{\text{chord}}^{(i)}}{\ell_{\text{path}}^{(i)}}\right], \quad \ell_{\text{path}}^{(i)} = \sum_{k=0}^{T-1} \|x_{t_{k+1}}^{(i)} - x_{t_k}^{(i)}\| \qquad\text{(Eq. 13}$$
+$$\text{PathEff} = \mathbb{E}_i\!\left[\frac{\ell_{\text{chord}}^{(i)}}{\ell_{\text{path}}^{(i)}}\right], \quad \ell_{\text{path}}^{(i)} = \sum_{k=0}^{T-1} \|x_{t_{k+1}}^{(i)} - x_{t_k}^{(i)}\| \qquad\text{(Eq. 13)}$$
 
 Path efficiency = 1 means the particle travels in a straight line (chord = arc length). This metric captures macro-scale trajectory geometry, whereas straightness captures micro-scale perpendicular deviation from the ideal chord.
 
@@ -252,7 +252,7 @@ Path efficiency = 1 means the particle travels in a straight line (chord = arc l
 
 The true $\mathcal{W}_2$ between two distributions:
 
-$$\mathcal{W}_2(p, q) = \left(\inf_{\pi \in \Pi(p,q)} \int \|x - y\|^2 \, d\pi(x,y)\right)^{1/2} \qquad\text{(Eq. 14}$$
+$$\mathcal{W}_2(p, q) = \left(\inf_{\pi \in \Pi(p,q)} \int \|x - y\|^2 \, d\pi(x,y)\right)^{1/2} \qquad\text{(Eq. 14)}$$
 
 is approximated here using Hungarian matching on subsampled point clouds ($N = 1000$):
 
@@ -264,13 +264,13 @@ where $\sigma$ is the optimal permutation from linear sum assignment. This is th
 
 With RBF kernel $k(x, y) = \exp(-\|x-y\|^2 / 2\sigma^2)$:
 
-$$\text{MMD}^2(p, q) = \mathbb{E}_{x,x' \sim p}[k(x,x')] + \mathbb{E}_{y,y' \sim q}[k(y,y')] - 2\mathbb{E}_{x \sim p, y \sim q}[k(x,y)] \qquad\text{(Eq. 15}$$
+$$\text{MMD}^2(p, q) = \mathbb{E}_{x,x' \sim p}[k(x,x')] + \mathbb{E}_{y,y' \sim q}[k(y,y')] - 2\mathbb{E}_{x \sim p, y \sim q}[k(x,y)] \qquad\text{(Eq. 15)}$$
 
 MMD = 0 if and only if $p = q$ (when the kernel is characteristic). As a **kernel two-sample test statistic**, MMD captures all-order moment differences between distributions. The RBF kernel with bandwidth $\sigma = 1.0$ is tuned to the scale of the 8-Gaussian and Swiss Roll datasets.
 
 ### 4.5 Solver Gap
 
-$$\text{SolverGap} = \frac{1}{N}\sum_{i=1}^N \left\|\tilde{x}^{\text{Euler}}_{(i)} - \tilde{x}^{\text{RK4}}_{(i)}\right\|_2 \qquad\text{(Eq. 16}$$
+$$\text{SolverGap} = \frac{1}{N}\sum_{i=1}^N \left\|\tilde{x}^{\text{Euler}}_{(i)} - \tilde{x}^{\text{RK4}}_{(i)}\right\|_2 \qquad\text{(Eq. 16)}$$
 
 where both $\tilde{x}^{\text{Euler}}$ (100 steps) and $\tilde{x}^{\text{RK4}}$ (50 steps) start from the **same** initial noise $x_0^{(i)}$. A small solver gap means the vector field is nearly linear in $t$ — integrable with few steps. This is the practical payoff of trajectory straightening.
 
@@ -278,7 +278,7 @@ where both $\tilde{x}^{\text{Euler}}$ (100 steps) and $\tilde{x}^{\text{RK4}}$ (
 
 ### 4.6 Kinetic Energy
 
-$$E_k = \int_0^1 \mathbb{E}_{x_t \sim p_t}\!\left[\|u_\theta(x_t, t)\|^2\right] dt \approx \frac{1}{T} \sum_{i=0}^{T-1} \mathbb{E}\!\left[\|u_\theta(x_{t_i}, t_i)\|^2\right] \qquad\text{(Eq. 17}$$
+$$E_k = \int_0^1 \mathbb{E}_{x_t \sim p_t}\!\left[\|u_\theta(x_t, t)\|^2\right] dt \approx \frac{1}{T} \sum_{i=0}^{T-1} \mathbb{E}\!\left[\|u_\theta(x_{t_i}, t_i)\|^2\right] \qquad\text{(Eq. 17)}$$
 
 This is the Benamou–Brenier energy — the OT functional. Lower kinetic energy = more efficient transport. Theoretical optimum for Gaussian-to-Gaussian transport is $\|m_1\|^2 + \text{tr}(\Sigma_0 + \Sigma_1 - 2(\Sigma_0^{1/2}\Sigma_1\Sigma_0^{1/2})^{1/2})$.
 
@@ -286,7 +286,7 @@ This is the Benamou–Brenier energy — the OT functional. Lower kinetic energy
 
 Mode $i$ is **detected** if $\geq 20$ samples fall within radius $r = 0.5$ of center $c_i = 2[\cos(2\pi i/8), \sin(2\pi i/8)]$:
 
-$$\text{Coverage} = \frac{1}{8}\sum_{i=1}^{8} \mathbf{1}\!\left[\sum_{j} \mathbf{1}\!\left[\|x_j - c_i\| < 0.5\right] \geq 20\right] \qquad\text{(Eq. 18}$$
+$$\text{Coverage} = \frac{1}{8}\sum_{i=1}^{8} \mathbf{1}\!\left[\sum_{j} \mathbf{1}\!\left[\|x_j - c_i\| < 0.5\right] \geq 20\right] \qquad\text{(Eq. 18)}$$
 
 Full coverage = 1.0 is required for an 8-Gaussian model — mode dropping is a fundamental failure mode.
 
